@@ -1,4 +1,4 @@
-import {  useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import "./App.css";
 
 interface Product {
@@ -9,6 +9,8 @@ interface Product {
 }
 function App() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<Product>();
+  const inputRef = useRef(null);
   let id: number;
   const fetchProducts = useCallback(async (query: string) => {
     try {
@@ -38,12 +40,21 @@ function App() {
     }, 200);
   };
 
+  const handleClick = (product: Product) => {
+    setSelectedProduct(product);
+    setProducts([]);
+    if (inputRef.current) {
+      inputRef.current.value = product.name; 
+    }
+  };
+
   return (
     <div style={{ width: "500px", margin: "0 auto", position: "relative" }}>
       <input
         type="text"
         onChange={handleInputChange}
         placeholder="Search..."
+        ref={inputRef}
         style={{
           width: "100%",
           height: "40px",
@@ -66,6 +77,7 @@ function App() {
                 padding: "10px",
                 cursor: "pointer",
               }}
+              onClick={() => handleClick(product)}
             >
               {product.name}
             </li>
